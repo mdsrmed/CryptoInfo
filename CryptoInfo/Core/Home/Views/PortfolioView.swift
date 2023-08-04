@@ -38,6 +38,11 @@ struct PortfolioView: View {
                     trailingNavBarButton
                 }
             }
+            .onChange(of: vm.searchText) { value in
+                if value == "" {
+                    removeSelectedCoin()
+                }
+            }
         }
     }
 }
@@ -55,13 +60,13 @@ extension PortfolioView {
         private var coinLogoList: some View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 10){
-                    ForEach(vm.allCoins){ coin in
+                    ForEach(vm.searchText.isEmpty ? vm.portfolioCoins : vm.allCoins){ coin in
                         CoinLogoView(coin: coin)
                             .frame(width: 75)
                             .padding(4)
                             .onTapGesture {
                                 withAnimation(.easeIn){
-                                    selectedCoin = coin
+                                  updateSelectedCoin(coin: coin)
                                 }
                             }
                             .background(
@@ -75,6 +80,18 @@ extension PortfolioView {
                 .padding(.leading)
             }
         }
+    
+    private func updateSelectedCoin(coin: CoinModel){
+        selectedCoin = coin
+        
+        if  let portfolioCoin = vm.portfolioCoins.first(where: {$0.id == coin.id}),
+            let amount = portfolioCoin.currentHoldings {
+                quantityText = "\(amount)"
+        } else {
+            quantityText = ""
+        }
+        
+    }
         
         private func getCurrentValue() -> Double {
             if let quantity = Double(quantityText){
@@ -133,7 +150,11 @@ extension PortfolioView {
     
     
     private func saveButtonPressed(){
-        guard let coin = selectedCoin else { return}
+        guard let coin = selectedCoin,
+        let amount = Double(quantityText)
+        else { return}
+        
+        vm.updatePortfolio(coin: coin, amount: amount)
         
         withAnimation(.easeIn){
             showCheckmark = true
