@@ -99,9 +99,16 @@ extension HomeView {
     private var allCoinsList: some View {
         List {
             ForEach(vm.allCoins) { coin in
-                CoinRowView(coin: coin, showHoldingsColumn: false)
-                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                NavigationLink(value: coin) {
+                    CoinRowView(coin: coin, showHoldingsColumn: false)
+                        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                }
+                .navigationDestination(for: CoinModel.self) { coin in
+                    DetailView(coin: coin)
+                }
+                
             }
+           
         }
         .listStyle(PlainListStyle())
     }

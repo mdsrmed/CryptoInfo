@@ -58,7 +58,18 @@ import Foundation
  */
 
 
-struct CoinModel: Identifiable, Codable {
+struct CoinModel: Identifiable, Codable, Hashable {
+    
+    static func == (lhs: CoinModel, rhs: CoinModel) -> Bool {
+        lhs.id != rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    
+    
     let id, symbol, name: String
     let image: String
     let currentPrice: Double
@@ -71,7 +82,7 @@ struct CoinModel: Identifiable, Codable {
     let athChangePercentage: Double?
     let athDate: String?
     let atl, atlChangePercentage: Double?
-    let atlDate: String?
+    let atlDate: String
     let lastUpdated: String?
     let sparklineIn7D: SparklineIn7D?
     let priceChangePercentage24HInCurrency: Double?
