@@ -22,9 +22,7 @@ struct CoinRowView: View {
             if showHoldingsColumn {
                 centerColum
             }
-            
             rightColumn
-            
         }
         .font(.subheadline)
         .background(Color.theme.background.opacity(0.001))
