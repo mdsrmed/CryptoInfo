@@ -10,6 +10,7 @@ import SwiftUI
 struct DetailView: View {
     
     @StateObject var vm: DetailViewModel
+    @State private var showFullDescription: Bool = false
     
     private let columns: [GridItem] = [
         GridItem(.flexible()),
@@ -34,6 +35,9 @@ struct DetailView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Divider()
+                    
+                   
+                    descriptionSection
                     
                     
                     LazyVGrid(columns: columns,
@@ -60,6 +64,23 @@ struct DetailView: View {
                             StatisticView(stat: stat)
                         }
                     }
+                    
+                    
+                    HStack {
+                        if let websiteString = vm.websiteURL,
+                           let url = URL(string: websiteString){
+                            Link("Website", destination: url)
+                        }
+                        
+                        Spacer()
+                        
+                        if let redditString = vm.redditURL,
+                           let url = URL(string: redditString){
+                            Link("Reddit", destination: url)
+                        }
+                    }
+                    .accentColor(.blue)
+                    .font(.headline)
                 }
                 .padding()
             }
@@ -82,5 +103,34 @@ struct DetailView: View {
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
         DetailView(coin: dev.coin)
+    }
+}
+
+
+extension DetailView {
+    private var descriptionSection: some View {
+        ZStack {
+            if let coinDescription = vm.coinDescription, !coinDescription.isEmpty {
+                VStack {
+                    Text(coinDescription)
+                        .lineLimit(showFullDescription ? nil : 3)
+                        .font(.callout)
+                    
+                    Button {
+                        withAnimation(.easeInOut){
+                            showFullDescription.toggle()
+                        }
+                    } label: {
+                        Text(showFullDescription ? "Less" : "Read more...")
+                            .font(.caption)
+                            .bold()
+                            .padding(.vertical, 4)
+                    }
+                    .accentColor(.blue)
+
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 }
